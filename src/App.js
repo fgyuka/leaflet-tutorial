@@ -4,7 +4,13 @@ import "leaflet/dist/leaflet.css"
 import "./App.css"
 
 const App = () => {
-    return <Map/>;
+    return (
+    <div>
+        <div>Header</div>
+        <Map/>
+    </div>
+    
+    )
 }
 
 export default App
