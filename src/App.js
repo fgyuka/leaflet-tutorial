@@ -1,16 +1,16 @@
-import React from "react"
-import {Map} from "./Map/Map"
-import "leaflet/dist/leaflet.css"
-import "./App.css"
+import React from "react";
+import { Map } from "./Map/Map";
+import "leaflet/dist/leaflet.css";
+import "./App.css";
+import background from "./images/OW_HALF.jpg";
 
 const App = () => {
-    return (
+  return (
     <div>
-        <div>Header</div>
-        <Map/>
+      <div>Header</div>
+      <Map />
     </div>
-    
-    )
-}
+  );
+};
 
-export default App
+export default App;

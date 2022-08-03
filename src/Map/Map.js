@@ -1,26 +1,48 @@
-import React from "react";
+import { React, useState, useRef, useMemo, useCallback } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { defaultIcon } from "../icons/defaulticon";
 import { cities } from "../data/cities";
+import { mountains } from "../data/highest_points";
+import { MarkerLayer } from "../layers/MarkerLayer";
+import { MarkerLayerWithTooltip } from "../layers/MarkerLayerWithTooltip";
+import { defaultIcon } from "../icons/defaulticon";
 
-const MarkerLayer = ({ data }) => {
-  return data.features.map((feature) => {
-    const { coordinates } = feature.geometry;
-
-    return (
-      <Marker
-        key={String(coordinates)}
-        position={[coordinates[1], coordinates[0]]}
-        draggable={true}
-        icon={defaultIcon}
-      >
-        <Popup>
-          A pretty CSS3 popup. <br /> Easily customizable.
-        </Popup>
-      </Marker>
-    );
-  });
+const center = {
+  lat: 51.505,
+  lng: -0.09,
 };
+
+function DraggableMarker() {
+  const [position, setPosition] = useState(center);
+  const markerRef = useRef(null);
+  const eventHandlers = useMemo(
+    () => ({
+      dragend() {
+        const marker = markerRef.current;
+        if (marker != null) {
+          setPosition(marker.getLatLng());
+        }
+      },
+    }),
+    []
+  );
+
+  console.log(position);
+
+  return (
+    <Marker
+      draggable={true}
+      eventHandlers={eventHandlers}
+      position={position}
+      ref={markerRef}
+      icon={defaultIcon}
+    >
+      <Popup minWidth={90}>
+        {"Latitude: " + position.lat.toString()} <br />
+        {"Longitude: " + position.lng.toString()}
+      </Popup>
+    </Marker>
+  );
+}
 
 export const Map = () => {
   return (
@@ -30,6 +52,8 @@ export const Map = () => {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
       <MarkerLayer data={cities} />
+      <MarkerLayerWithTooltip data={mountains} />
+      {/* <DraggableMarker /> */}
     </MapContainer>
   );
 };
