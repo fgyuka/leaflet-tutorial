@@ -4,6 +4,7 @@ import { Marker, Popup } from "react-leaflet";
 import { defaultIcon } from "../icons/defaulticon";
 import { Button, Card, InputNumber, Space } from "antd";
 import { FilterOutlined } from "@ant-design/icons";
+import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 
 // function LocationFinder() {
 //   const [position, setPosition] = useState(null);
@@ -44,7 +45,6 @@ const PopupStatistics = ({ feature, setRadiusFilter }) => {
                                 } else if (radius !== 0) {
                                     newFilter = { feature, radius };
                                 }
-
                                 return newFilter;
                             })
                         }
@@ -57,7 +57,8 @@ const PopupStatistics = ({ feature, setRadiusFilter }) => {
     );
 };
 
-export const MarkerLayer = ({ data, setRadiusFilter, getRadiusFilter }) => {
+export const MarkerLayer = ({ data, setRadiusFilter, getRadiusFilter, getGeoFilter }) => {
+    const geoFilter = getGeoFilter();
     const radiusFilter = getRadiusFilter();
     let centerPoint;
     if (radiusFilter) {
@@ -67,13 +68,26 @@ export const MarkerLayer = ({ data, setRadiusFilter, getRadiusFilter }) => {
 
     return data.features
         .filter((currentFeature) => {
+            let filterByRadius;
+            let filterByGeo;
             if (centerPoint) {
                 const { coordinates } = currentFeature.geometry;
                 const currentPoint = L.latLng(coordinates[1], coordinates[0]);
-                return centerPoint.distanceTo(currentPoint) / 1000 < radiusFilter.radius;
-            } else {
-                return true;
+                filterByRadius = centerPoint.distanceTo(currentPoint) / 1000 < radiusFilter.radius;
             }
+            if (geoFilter) {
+                filterByGeo = booleanPointInPolygon(currentFeature, geoFilter);
+            }
+
+            let doFilter = true;
+            if (geoFilter && radiusFilter) {
+                doFilter = filterByGeo && filterByRadius;
+            } else if (geoFilter && !radiusFilter) {
+                doFilter = filterByGeo;
+            } else if (radiusFilter && !geoFilter) {
+                doFilter = filterByRadius;
+            }
+            return doFilter;
         })
         .map((feature) => {
             const { coordinates } = feature.geometry;
