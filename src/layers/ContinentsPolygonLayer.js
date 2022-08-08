@@ -1,16 +1,15 @@
-import { GeoJSON } from "react-leaflet";
+import { LayerGroup, LayersControl, GeoJSON } from "react-leaflet";
 
 export const ContinentsPolygonLayer = ({ data, setGeoFilter, getGeoFilter }) => {
     const geoFilter = getGeoFilter();
-    return (
+    const layer = (
         <GeoJSON
             key="geo-json-layer"
             data={data}
             eventHandlers={{
                 click: (e) =>
                     setGeoFilter((prevState) => {
-                        const same = prevState === e.propagatedFrom.feature;
-                        return same ? null : e.propagatedFrom.feature;
+                        return prevState === e.propagatedFrom.feature ? null : e.propagatedFrom.feature;
                     }),
                 // dblclick: (e) => {
                 //     setGeoFilter(null);
@@ -25,5 +24,11 @@ export const ContinentsPolygonLayer = ({ data, setGeoFilter, getGeoFilter }) => 
                 };
             }}
         ></GeoJSON>
+    );
+
+    return (
+        <LayersControl.Overlay checked name="Continents">
+            <LayerGroup>{layer}</LayerGroup>
+        </LayersControl.Overlay>
     );
 };

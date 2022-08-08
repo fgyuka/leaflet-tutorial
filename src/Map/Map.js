@@ -1,5 +1,5 @@
 import { React, useState, useRef, useMemo, useCallback } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { LayersControl, MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { cities } from "../data/cities";
 import { mountains } from "../data/highest_points";
 import { MarkerLayer } from "../layers/MarkerLayer";
@@ -8,6 +8,7 @@ import { defaultIcon } from "../icons/defaulticon";
 import { RadiusFilter } from "../layers/RadiusFilter";
 import { continents } from "../data/continents";
 import { ContinentsPolygonLayer } from "../layers/ContinentsPolygonLayer";
+import { FitBoundsToDataControl } from "../controls/FitDataToBounds";
 
 const center = {
     lat: 51.505,
@@ -49,20 +50,25 @@ export const Map = () => {
 
     return (
         <MapContainer center={[0, 0]} zoom={1} scrollWheelZoom={true}>
-            <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <MarkerLayer
-                data={cities}
-                setRadiusFilter={setRadiusFilter}
-                getRadiusFilter={getRadiusFilter}
-                getGeoFilter={getGeoFilter}
-            />
-            <MarkerLayerWithTooltip data={mountains} />
-            <RadiusFilter radiusFilter={radiusFilter} setRadiusFilter={setRadiusFilter} />
-            <ContinentsPolygonLayer data={continents} setGeoFilter={setGeoFilter} getGeoFilter={getGeoFilter} />
-            {/* <DraggableMarker /> */}
+            <LayersControl position="topright">
+                <LayersControl.BaseLayer checked name="OSM Streets">
+                    <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                </LayersControl.BaseLayer>
+                <MarkerLayer
+                    data={cities}
+                    setRadiusFilter={setRadiusFilter}
+                    getRadiusFilter={getRadiusFilter}
+                    getGeoFilter={getGeoFilter}
+                />
+                <MarkerLayerWithTooltip data={mountains} />
+                <RadiusFilter radiusFilter={radiusFilter} setRadiusFilter={setRadiusFilter} />
+                <ContinentsPolygonLayer data={continents} setGeoFilter={setGeoFilter} getGeoFilter={getGeoFilter} />
+                {/* <DraggableMarker /> */}
+            </LayersControl>
+            <FitBoundsToDataControl />
         </MapContainer>
     );
 };
