@@ -9,6 +9,7 @@ import { RadiusFilter } from "../layers/RadiusFilter";
 import { continents } from "../data/continents";
 import { ContinentsPolygonLayer } from "../layers/ContinentsPolygonLayer";
 import { FitBoundsToDataControl } from "../controls/FitDataToBounds";
+import { ShowActiveFiltersControl } from "../controls/ShowActiveFilters";
 
 const center = {
     lat: 51.505,
@@ -69,6 +70,7 @@ export const Map = () => {
                 {/* <DraggableMarker /> */}
             </LayersControl>
             <FitBoundsToDataControl />
+            <ShowActiveFiltersControl getFilters={() => ({ geoFilter, radiusFilter })} />
         </MapContainer>
     );
 };
